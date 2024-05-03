@@ -2,19 +2,12 @@ package com.app.controller;
 
 import java.util.List;
 
+import com.app.globalexceptionhandler.OrderNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.app.entity.Order;
 import com.app.service.OrderService;
@@ -57,6 +50,15 @@ public class OrderController {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 
+	}
+	@DeleteMapping("/deleteOrder/{orderId}")
+	public ResponseEntity<String> deleteOrderById(@PathVariable Integer orderId) {
+		try {
+			orderService.deleteOrderById(orderId);
+			return ResponseEntity.ok("Order with ID " + orderId + " deleted successfully.");
+		} catch (OrderNotFoundException ex) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+		}
 	}
 }
 

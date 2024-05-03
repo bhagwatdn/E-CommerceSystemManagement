@@ -60,11 +60,15 @@ public class OrderServiceImpl implements OrderService
 			throw new OrderNotFoundException("Order Not Found With ID: " + orderId);
 		}
 	}
-	
+	public void deleteOrderById(Integer orderId) {
+		Order order = getOrderById(orderId);
+		orderRepository.delete(order);
+	}
 
-	
 
-	
 
-	
+
+
+
+
 }

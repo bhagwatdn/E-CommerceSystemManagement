@@ -1,38 +1,23 @@
 package com.app.testcontroller;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-
-import java.math.BigDecimal;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.assertj.core.util.Arrays;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -40,7 +25,7 @@ import com.app.controller.OrderController;
 import com.app.entity.Order;
 import com.app.service.OrderService;
 import com.app.utility.OrderStatus;
-import com.fasterxml.jackson.annotation.JacksonInject.Value;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -53,6 +38,19 @@ public class OrderControllerTest {
 	
 	@Autowired
 	MockMvc mockMvc;
+
+	@BeforeEach
+	public void setup() throws Exception {
+		SimpleDateFormat simpleformat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+		Date date = simpleformat.parse("2019-12-24 01:22:05");
+		Order mockOrder = new Order();
+		mockOrder.setOrderId(2);
+		mockOrder.setCustomerName("Bhagwat");
+		mockOrder.setOrderDate(date);
+		mockOrder.setTotalAmount(200.5f);
+		mockOrder.setOrderStatus(OrderStatus.SHIPPED);
+		when(orderService.getOrderById(2)).thenReturn(mockOrder);
+	}
 	
 	@Test
 	public void test_PlaceaNewOrder() throws Exception {
@@ -83,7 +81,7 @@ public class OrderControllerTest {
 				mockOrder.setTotalAmount((200.5f));
 				mockOrder.setOrderStatus(OrderStatus.SHIPPED);
 				when(orderService.getOrderById(2)).thenReturn(mockOrder);
-				mockMvc.perform(get("/api/getOrdrById/{orderId}",2)
+				mockMvc.perform(get("/api/getOrderById/{orderId}",2)
 						.contentType(MediaType.APPLICATION_JSON))
 				        .andExpect(status().isOk())
 			          	.andExpect(jsonPath("$.customerName").value("Bhagwat"));
@@ -136,6 +134,12 @@ public class OrderControllerTest {
 
 
  	}
-	
+	@Test
+	public void test_deleteOrderById() throws Exception {
+		mockMvc.perform(delete("/api/deleteOrder/{orderId}", 2)
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk());
 
+		verify(orderService, times(1)).deleteOrderById(2);
+	}
 }

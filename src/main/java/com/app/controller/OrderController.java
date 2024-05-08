@@ -53,12 +53,12 @@ public class OrderController {
 	}
 	@DeleteMapping("/deleteOrder/{orderId}")
 	public ResponseEntity<String> deleteOrderById(@PathVariable Integer orderId) {
-		try {
-			orderService.deleteOrderById(orderId);
-			return ResponseEntity.ok("Order with ID " + orderId + " deleted successfully.");
-		} catch (OrderNotFoundException ex) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-		}
-	}
+        try {
+            orderService.deleteOrderById(orderId);
+            return ResponseEntity.ok("Order with ID " + orderId + " deleted successfully.");
+        } catch (OrderNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }
+    }
 }
 
